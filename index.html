@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f8f4" />
+    <meta name="description" content="İngilizce düzensiz fiilleri cümle içinde çalış." />
+    <title>Geçmiş Zaman Dedektifi</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="questions.js" defer></script>
+    <script src="english.js" defer></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="Geçmiş Zaman Dedektifi ana sayfa">
+          <span class="brand-mark" aria-hidden="true">Aa</span>
+          <span>Kelime Kulübü</span>
+        </a>
+        <div class="profile-controls" id="profile-controls" hidden>
+          <span id="active-child-name"></span>
+          <button class="change-profile-button" id="change-profile-button" type="button">Çocuk değiştir</button>
+        </div>
+      </header>
+
+      <section class="welcome view" id="welcome-view" aria-labelledby="welcome-title">
+        <div class="welcome-copy">
+          <p class="eyebrow"><span class="eyebrow-line"></span> İNGİLİZCE • DÜZENSİZ FİİLLER</p>
+          <h1 id="welcome-title">Geçmiş zaman<br /><span>dedektifi</span></h1>
+          <p class="welcome-text">Adını yaz, kaldığın quizden devam et. Cümleleri bazen yazarak bazen seçeneklerden cevapla.</p>
+          <div class="welcome-facts" aria-label="Çalışma bilgileri">
+            <span><b>400</b> soru</span><span class="fact-divider" aria-hidden="true"></span><span><b>20 quiz</b> · her biri 20 soru</span>
+          </div>
+        </div>
+        <div class="welcome-art" aria-hidden="true">
+          <div class="sunburst"></div>
+          <div class="paper-card">
+            <span class="paper-label">DÜN NE OLDU?</span>
+            <p>Yesterday,<br />I <span class="scribble">came</span><br />to the park.</p>
+            <span class="paper-check">✓</span>
+          </div>
+          <div class="pencil-shape"></div>
+          <div class="spark spark-one">✳</div><div class="spark spark-two">✦</div>
+          <span class="art-caption">Oku · düşün · yaz</span>
+        </div>
+        <form class="profile-entry" id="profile-entry">
+          <label for="child-name">Adın ne?</label>
+          <div class="profile-entry-row">
+            <input id="child-name" name="child-name" type="text" maxlength="30" autocomplete="name" placeholder="Adını yaz" required />
+            <button class="button button-primary" type="submit">Devam et <span aria-hidden="true">→</span></button>
+          </div>
+          <p>İlerlemen bu cihazdaki tarayıcıda saklanır.</p>
+        </form>
+        <div class="progress-hub" id="progress-hub" hidden>
+          <div class="quiz-next" id="quiz-next">
+            <div><p class="next-label">Sıradaki çalışma</p><h2 id="next-quiz-title"></h2><span class="next-detail" id="next-quiz-detail"></span></div>
+            <button class="button button-primary" id="continue-quiz-button" type="button">Başla <span aria-hidden="true">→</span></button>
+          </div>
+          <div class="all-quizzes-done" id="all-quizzes-done" hidden>
+            <span class="done-mark" aria-hidden="true">✓</span><div><h2>Bütün quizleri bitirdin!</h2><p>Harika çalıştın. 20 quizin tamamı tamamlandı.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="quiz view" id="quiz-view" aria-labelledby="question-title" hidden>
+        <div class="quiz-heading">
+          <div><p class="eyebrow"><span class="eyebrow-line"></span> <span id="question-mode-label">Cümleyi tamamla</span></p><h1 id="question-title">Dün ne oldu?</h1></div>
+          <div class="progress-copy"><span id="progress-current">1</span><span class="progress-slash">/</span><span id="progress-total">20</span></div>
+        </div>
+        <div class="progress-track" role="progressbar" aria-label="İlerleme" aria-valuemin="0" aria-valuemax="20" aria-valuenow="1" id="progress-bar"><span class="progress-fill" id="progress-fill"></span></div>
+        <article class="question-card" aria-live="polite">
+          <div class="question-topline">
+            <span class="question-kicker" id="question-kicker">BOŞLUĞU DOLDUR</span>
+            <div class="hint-control">
+              <button class="hint-button" id="hint-button" type="button" aria-expanded="false" aria-controls="verb-hint">İpucu <span aria-hidden="true">?</span></button>
+              <span class="verb-hint" id="verb-hint" hidden></span>
+            </div>
+          </div>
+          <p class="sentence" id="sentence-text"></p>
+          <div id="typing-answer">
+            <label class="answer-label" for="answer-input">Geçmiş hâlini klavyeyle yaz</label>
+            <div class="answer-row"><input id="answer-input" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" aria-describedby="answer-feedback" placeholder="Cevabını yaz" /></div>
+          </div>
+          <div id="choice-answer" hidden><p class="answer-label">Doğru cevabı seç</p><div class="choice-grid" id="choice-grid" role="group" aria-label="Cevap seçenekleri"></div></div>
+          <div class="answer-submit"><button class="button button-check" id="check-button" type="button">Kontrol et</button></div>
+          <p class="feedback" id="answer-feedback" aria-live="polite"></p>
+          <div class="question-actions">
+            <span class="tiny-note" id="question-note">Büyük ya da küçük harfle yazabilirsin.</span>
+            <button class="skip-repeat-button" id="skip-repeat-button" type="button" hidden>Daha önce yaptım, geç</button>
+            <button class="button button-next" id="next-button" type="button" disabled>Sonraki <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <p class="privacy-note"><span aria-hidden="true">✎</span> Cevapların kaydedilmez.</p>
+      </section>
+
+      <section class="finish view" id="finish-view" aria-labelledby="finish-title" hidden>
+        <div class="finish-stamp" aria-hidden="true">✦</div>
+        <p class="eyebrow"><span class="eyebrow-line"></span> Çalışma tamamlandı</p>
+        <h1 id="finish-title">Harika iş çıkardın!</h1>
+        <p class="finish-copy" id="finish-copy"></p>
+        <p class="finish-score" id="finish-score"></p>
+        <button class="button button-primary" id="next-quiz-button" type="button">Sıradaki quiz'e geç <span aria-hidden="true">→</span></button>
+        <button class="button button-primary" id="back-home-button" type="button" hidden>Ana sayfaya dön <span aria-hidden="true">→</span></button>
+      </section>
+    </main>
+  </body>
+</html>
