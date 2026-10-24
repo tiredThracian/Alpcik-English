@@ -8,6 +8,7 @@
     <title>Geçmiş Zaman Dedektifi</title>
     <link rel="stylesheet" href="styles.css" />
     <script src="questions.js" defer></script>
+    <script src="english-audio.js" defer></script>
     <script src="english.js" defer></script>
   </head>
   <body>
@@ -84,6 +85,10 @@
           <div id="choice-answer" hidden><p class="answer-label">Doğru cevabı seç</p><div class="choice-grid" id="choice-grid" role="group" aria-label="Cevap seçenekleri"></div></div>
           <div class="answer-submit"><button class="button button-check" id="check-button" type="button">Kontrol et</button></div>
           <p class="feedback" id="answer-feedback" aria-live="polite"></p>
+          <div class="audio-actions" id="audio-actions" hidden>
+            <button class="audio-button" id="play-sentence" type="button"><span aria-hidden="true">🔊</span> Cümleyi dinle</button>
+            <button class="audio-button" id="play-sentence-slow" type="button"><span aria-hidden="true">🐢</span> Yavaş dinle</button>
+          </div>
           <div class="question-actions">
             <span class="tiny-note" id="question-note">Büyük ya da küçük harfle yazabilirsin.</span>
             <button class="skip-repeat-button" id="skip-repeat-button" type="button" hidden>Daha önce yaptım, geç</button>

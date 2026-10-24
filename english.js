@@ -32,6 +32,15 @@ const progressFill = $('#progress-fill');
 const questionModeLabel = $('#question-mode-label');
 const questionKicker = $('#question-kicker');
 const questionNote = $('#question-note');
+const audioActions = $('#audio-actions');
+const audioBase = 'audio/en/';
+function fullSentence(question) {
+  return question.sentence.replace(/<[^>]*>/g, '').replace(/\*\*/g, '').replace('_____', question.answer);
+}
+function playSentence(question, rate = 1) {
+  return window.EnglishAudio.play(`${audioBase}${question.id}.mp3`, fullSentence(question), rate);
+}
+function wait(ms) { return new Promise((resolve) => window.setTimeout(resolve, ms)); }
 
 // Keep the storage key and quiz IDs so progress from the original Pages site remains available.
 const profilesStorageKey = 'gecmis-zaman-kulubu-child-profiles-v1';
@@ -158,6 +167,7 @@ function makeChoiceButton(option, index) {
     });
     feedback.textContent = '';
     feedback.classList.remove('is-wrong');
+    window.EnglishAudio.play(`${audioBase}words/${option}.mp3`, option);
   });
   return button;
 }
@@ -173,6 +183,8 @@ function renderQuestion() {
   checkButton.disabled = false;
   nextButton.disabled = true;
   skipRepeatButton.disabled = false;
+  window.EnglishAudio.stop();
+  audioActions.hidden = true;
   skipRepeatButton.hidden = !activeProfile.seenQuestionKeys.includes(questionSignature(question));
   nextButton.innerHTML = questionIndex === questions.length - 1 ? 'Quizi bitir <span aria-hidden="true">✓</span>' : 'Sonraki <span aria-hidden="true">→</span>';
   sentenceText.innerHTML = question.sentence.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
@@ -249,10 +261,13 @@ function checkAnswer() {
   choiceGrid.querySelectorAll('.choice-option').forEach((choice) => { choice.disabled = true; });
   nextButton.disabled = correct;
   skipRepeatButton.disabled = correct;
-  if (correct) window.setTimeout(() => {
-    if (hasAnswered && questions[questionIndex] === question) advanceQuestion();
-  }, 1100);
-  else nextButton.focus();
+  audioActions.hidden = false;
+  const spoken = playSentence(question);
+  if (correct) {
+    Promise.all([Promise.race([spoken, wait(9000)]), wait(1100)]).then(() => wait(400)).then(() => {
+      if (hasAnswered && questions[questionIndex] === question) advanceQuestion();
+    });
+  } else nextButton.focus();
 }
 function showFinish() {
   if (!activeProfile.completedQuizIds.includes(currentQuiz.id)) activeProfile.completedQuizIds.push(currentQuiz.id);
@@ -299,6 +314,8 @@ hintButton.addEventListener('click', () => {
   hintButton.innerHTML = expanded ? 'İpucu <span aria-hidden="true">?</span>' : 'İpucunu gizle';
 });
 checkButton.addEventListener('click', checkAnswer);
+$('#play-sentence').addEventListener('click', () => { if (hasAnswered) playSentence(questions[questionIndex]); });
+$('#play-sentence-slow').addEventListener('click', () => { if (hasAnswered) playSentence(questions[questionIndex], 0.7); });
 nextButton.addEventListener('click', () => { if (hasAnswered) advanceQuestion(); });
 skipRepeatButton.addEventListener('click', () => { if (!skipRepeatButton.hidden) advanceQuestion(); });
 answerInput.addEventListener('keydown', (event) => {

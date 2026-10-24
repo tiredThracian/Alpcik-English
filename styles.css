@@ -178,6 +178,11 @@ h1 { margin: 0; color: var(--ink); font-family: var(--display); font-weight: 600
 .feedback.is-wrong { color: #cb614b; }
 .answer-row input.is-correct { border-color: #8cc7a4; background: #f4fbf5; }
 .answer-row input.is-wrong { border-color: #e8a395; background: #fff9f7; }
+.audio-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.audio-button { min-height: 38px; padding: 0 14px; border: 1px solid #cfe3d6; border-radius: 11px; background: #f2f9f4; color: #25664f; cursor: pointer; font-size: 13px; font-weight: 800; transition: transform .18s ease, background-color .18s ease; }
+.audio-button:hover { background: #e4f3e9; transform: translateY(-1px); }
+.audio-button:active { transform: translateY(0); }
+.audio-button span { margin-right: 5px; }
 .question-actions { display: flex; align-items: center; justify-content: space-between; margin-top: 15px; }
 .tiny-note { flex: 1; color: #9ba59f; font-size: 10px; }
 .skip-repeat-button { min-height: 42px; padding: 0 12px; border: 1px solid #e2e9e3; border-radius: 11px; background: #fbfdfa; color: #718079; cursor: pointer; font-size: 11px; font-weight: 700; }
