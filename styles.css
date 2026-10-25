@@ -151,10 +151,10 @@ h1 { margin: 0; color: var(--ink); font-family: var(--display); font-weight: 600
 .question-topline { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
 .question-kicker { color: #9aa69f; font-size: 10px; font-weight: 800; letter-spacing: .13em; }
 .hint-control { min-width: 0; display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 7px; }
-.hint-button { min-height: 31px; padding: 0 10px; border: 1px solid #dce9df; border-radius: 9px; background: #f7fbf7; color: #577366; cursor: pointer; font-size: 11px; font-weight: 700; }
-.hint-button span { margin-left: 4px; color: var(--mint-deep); font-size: 13px; }
-.hint-button:hover { background: #edf6ef; }
-.verb-hint { max-width: 100%; padding: 8px 12px; border-radius: 9px; background: #edf6ef; color: #728078; font-size: 14px; line-height: 1.35; }
+.hint-button { min-height: 34px; padding: 0 11px; border: 1px solid #25856a; border-radius: 9px; background: #25856a; color: #fff; box-shadow: 0 4px 10px #25856a26; cursor: pointer; font-size: 12px; font-weight: 800; }
+.hint-button span { margin-left: 4px; color: #d8f3e4; font-size: 14px; }
+.hint-button:hover { background: #1e7058; border-color: #1e7058; }
+.verb-hint { max-width: 100%; padding: 9px 13px; border: 1px solid #a8d8bc; border-radius: 10px; background: #e0f4e8; color: #185c46; font-size: 15.5px; font-weight: 600; line-height: 1.4; }
 .sentence { min-height: 54px; margin: 24px 0 23px; color: #344550; font-family: "Lexend", "DM Sans", "Trebuchet MS", sans-serif; font-size: clamp(23px, 3.7vw, 28px); font-weight: 500; letter-spacing: 0; line-height: 1.45; }
 .sentence strong { color: var(--mint-deep); font-weight: 700; }
 .blank { display: inline-block; min-width: 93px; border-bottom: 2px dashed #91bca8; color: var(--mint-deep); text-align: center; }
