@@ -190,8 +190,6 @@ h1 { margin: 0; color: var(--ink); font-family: var(--display); font-weight: 600
 .button-next { min-height: 42px; padding: 0 16px; background: var(--ink); color: white; font-size: 12px; }
 .button-next span { margin-left: 10px; color: #a8e3c6; font-size: 16px; }
 .button-next:disabled { background: #c4cdc7; cursor: not-allowed; }
-.privacy-note { display: flex; align-items: center; justify-content: center; gap: 7px; margin: 15px 0 0; color: #9aa59d; font-size: 10px; }
-.privacy-note span { color: var(--coral); font-size: 13px; }
 
 .finish { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 0; text-align: center; }
 .finish-stamp { width: 74px; height: 74px; display: grid; place-items: center; margin-bottom: 25px; border: 1px dashed #d6ae51; border-radius: 50%; background: #fff4cc; color: #d49e23; font-size: 32px; transform: rotate(9deg); }
