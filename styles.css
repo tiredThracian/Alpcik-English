@@ -148,13 +148,13 @@ h1 { margin: 0; color: var(--ink); font-family: var(--display); font-weight: 600
 .progress-track { height: 6px; overflow: hidden; margin: 21px 0 18px; border-radius: 10px; background: #e3eae4; }
 .progress-fill { width: 6.67%; height: 100%; display: block; border-radius: inherit; background: var(--coral); transition: width .3s ease; }
 .question-card { padding: 26px 30px 21px; border: 1px solid #e7ece5; border-radius: 19px; background: var(--paper); box-shadow: 0 13px 35px #23382d0b; }
-.question-topline { display: flex; align-items: center; justify-content: space-between; }
+.question-topline { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
 .question-kicker { color: #9aa69f; font-size: 10px; font-weight: 800; letter-spacing: .13em; }
-.hint-control { display: flex; align-items: center; gap: 7px; }
+.hint-control { min-width: 0; display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 7px; }
 .hint-button { min-height: 31px; padding: 0 10px; border: 1px solid #dce9df; border-radius: 9px; background: #f7fbf7; color: #577366; cursor: pointer; font-size: 11px; font-weight: 700; }
 .hint-button span { margin-left: 4px; color: var(--mint-deep); font-size: 13px; }
 .hint-button:hover { background: #edf6ef; }
-.verb-hint { padding: 8px 12px; border-radius: 9px; background: #edf6ef; color: #728078; font-size: 14px; line-height: 1.35; }
+.verb-hint { max-width: 100%; padding: 8px 12px; border-radius: 9px; background: #edf6ef; color: #728078; font-size: 14px; line-height: 1.35; }
 .sentence { min-height: 54px; margin: 24px 0 23px; color: #344550; font-family: "Lexend", "DM Sans", "Trebuchet MS", sans-serif; font-size: clamp(23px, 3.7vw, 28px); font-weight: 500; letter-spacing: 0; line-height: 1.45; }
 .sentence strong { color: var(--mint-deep); font-weight: 700; }
 .blank { display: inline-block; min-width: 93px; border-bottom: 2px dashed #91bca8; color: var(--mint-deep); text-align: center; }

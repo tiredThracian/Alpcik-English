@@ -60,6 +60,7 @@ let correctCount = 0;
 let hasAnswered = false;
 let selectedChoice = '';
 let answerResults = {};
+let hintLevel = 0;
 
 function saveProfiles() {
   try { localStorage.setItem(profilesStorageKey, JSON.stringify(profiles)); } catch { /* Continue without storage. */ }
@@ -190,11 +191,13 @@ function renderQuestion() {
   skipRepeatButton.hidden = !activeProfile.seenQuestionKeys.includes(questionSignature(question));
   nextButton.innerHTML = questionIndex === questions.length - 1 ? 'Quizi bitir <span aria-hidden="true">✓</span>' : 'Sonraki <span aria-hidden="true">→</span>';
   sentenceText.innerHTML = question.sentence.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  hintLevel = 0;
   hintContent.textContent = question.hint;
   hintContent.hidden = true;
   hintButton.innerHTML = 'İpucu <span aria-hidden="true">?</span>';
   hintButton.setAttribute('aria-expanded', 'false');
   const choice = question.mode === 'choice';
+  hintButton.innerHTML = choice ? 'İpucu <span aria-hidden="true">?</span>' : '1. ipucu';
   typingAnswer.hidden = choice;
   choiceAnswer.hidden = !choice;
   questionModeLabel.textContent = choice ? 'Doğru seçeneği bul' : 'Cümleyi tamamla';
@@ -342,6 +345,27 @@ continueQuizButton.addEventListener('click', startQuiz);
 nextQuizButton.addEventListener('click', startQuiz);
 backHomeButton.addEventListener('click', showHome);
 hintButton.addEventListener('click', () => {
+  const question = questions[questionIndex];
+  if (question.mode === 'typing') {
+    if (hintLevel === 3) {
+      hintLevel = 0;
+      hintContent.hidden = true;
+      hintButton.setAttribute('aria-expanded', 'false');
+      hintButton.innerHTML = '1. ipucu';
+      return;
+    }
+    hintLevel += 1;
+    const hintText = hintLevel === 1
+      ? question.hint
+      : hintLevel === 2
+        ? `Dört aday: ${question.options.join(' · ')}`
+        : `Fiilin şimdiki hâli: ${question.verb}`;
+    hintContent.textContent = hintText;
+    hintContent.hidden = false;
+    hintButton.setAttribute('aria-expanded', 'true');
+    hintButton.innerHTML = hintLevel < 3 ? `${hintLevel + 1}. ipucu` : 'İpuçlarını gizle';
+    return;
+  }
   const expanded = hintButton.getAttribute('aria-expanded') === 'true';
   hintContent.hidden = expanded;
   hintButton.setAttribute('aria-expanded', String(!expanded));
