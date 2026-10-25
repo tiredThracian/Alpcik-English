@@ -187,6 +187,11 @@ h1 { margin: 0; color: var(--ink); font-family: var(--display); font-weight: 600
 .skip-repeat-button:hover { border-color: #aacbb5; background: #f0f8f1; color: var(--mint-deep); }
 .button-next { min-height: 42px; padding: 0 16px; background: var(--ink); color: white; font-size: 12px; }
 .button-next span { margin-left: 10px; color: #a8e3c6; font-size: 16px; }
+.nav-buttons { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.button-prev { min-height: 42px; padding: 0 16px; border: 1px solid #dce6dc; background: #fbfdfa; color: #4d5f58; font-size: 12px; }
+.button-prev span { margin-right: 8px; color: var(--mint-deep); font-size: 16px; }
+.button-prev:hover:not(:disabled) { background: #f0f8f1; }
+.button-prev:disabled { opacity: .45; cursor: not-allowed; }
 .button-next:disabled { background: #c4cdc7; cursor: not-allowed; }
 
 .finish { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 0; text-align: center; }

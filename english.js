@@ -22,6 +22,7 @@ const choiceAnswer = $('#choice-answer');
 const choiceGrid = $('#choice-grid');
 const checkButton = $('#check-button');
 const nextButton = $('#next-button');
+const prevButton = $('#prev-button');
 const skipRepeatButton = $('#skip-repeat-button');
 const feedback = $('#answer-feedback');
 const hintButton = $('#hint-button');
@@ -58,6 +59,7 @@ let questionIndex = 0;
 let correctCount = 0;
 let hasAnswered = false;
 let selectedChoice = '';
+let answerResults = {};
 
 function saveProfiles() {
   try { localStorage.setItem(profilesStorageKey, JSON.stringify(profiles)); } catch { /* Continue without storage. */ }
@@ -203,6 +205,34 @@ function renderQuestion() {
   progressCurrent.textContent = String(questionIndex + 1);
   progressFill.style.width = `${((questionIndex + 1) / questions.length) * 100}%`;
   progressBar.setAttribute('aria-valuenow', String(questionIndex + 1));
+  prevButton.disabled = questionIndex === 0;
+  const furthest = activeProfile.quizStates[currentQuiz.id]?.questionIndex ?? 0;
+  if (answerResults[question.id] || questionIndex < furthest) showSolved(question, answerResults[question.id]);
+}
+// A question that was already answered is shown solved, never asked again; audio stays available.
+function showSolved(question, result) {
+  hasAnswered = true;
+  const shown = result ? result.guess : question.answer;
+  const correct = result ? result.correct : true;
+  checkButton.disabled = true;
+  nextButton.disabled = false;
+  skipRepeatButton.hidden = true;
+  audioActions.hidden = false;
+  if (question.mode === 'typing') {
+    answerInput.value = shown;
+    answerInput.disabled = true;
+    answerInput.classList.add(correct ? 'is-correct' : 'is-wrong');
+  } else {
+    choiceGrid.querySelectorAll('.choice-option').forEach((choice) => {
+      choice.disabled = true;
+      const selected = choice.lastElementChild.textContent === shown;
+      choice.classList.toggle('is-selected', selected);
+      choice.setAttribute('aria-pressed', String(selected));
+    });
+  }
+  feedback.classList.toggle('is-wrong', !correct);
+  if (correct) feedback.textContent = result ? 'Cevabın doğru! Cümleyi tekrar dinleyebilirsin.' : `Bu soruyu çözdün. Doğru cevap: ${question.answer}.`;
+  else feedback.innerHTML = `Güzel deneme! Doğru cevap: <b>${question.answer}</b>.`;
 }
 function enterQuiz(quiz) {
   if (!activeProfile) return;
@@ -222,6 +252,7 @@ function enterQuiz(quiz) {
   questions = state.questionOrder.map((id) => questionById.get(id));
   questionIndex = state.questionIndex;
   correctCount = 0;
+  answerResults = {};
   welcomeView.hidden = true;
   quizView.hidden = false;
   finishView.hidden = true;
@@ -247,9 +278,10 @@ function checkAnswer() {
   if (!activeProfile.seenQuestionKeys.includes(signature)) activeProfile.seenQuestionKeys.push(signature);
   saveProfiles();
   const correct = guess.toLocaleLowerCase('en') === question.answer.toLocaleLowerCase('en');
+  answerResults[question.id] = { guess, correct };
   if (correct) {
     correctCount += 1;
-    feedback.textContent = 'Cevabın doğru! Sıradaki soruya geçiyoruz.';
+    feedback.textContent = 'Cevabın doğru! Cümleyi dinleyebilirsin, hazır olunca Sonraki düğmesine bas.';
     if (question.mode === 'typing') answerInput.classList.add('is-correct');
   } else {
     feedback.innerHTML = `Güzel deneme! Doğru cevap: <b>${question.answer}</b>.`;
@@ -259,15 +291,11 @@ function checkAnswer() {
   answerInput.disabled = true;
   checkButton.disabled = true;
   choiceGrid.querySelectorAll('.choice-option').forEach((choice) => { choice.disabled = true; });
-  nextButton.disabled = correct;
-  skipRepeatButton.disabled = correct;
+  nextButton.disabled = false;
+  skipRepeatButton.disabled = true;
   audioActions.hidden = false;
-  const spoken = playSentence(question);
-  if (correct) {
-    Promise.all([Promise.race([spoken, wait(9000)]), wait(1100)]).then(() => wait(400)).then(() => {
-      if (hasAnswered && questions[questionIndex] === question) advanceQuestion();
-    });
-  } else nextButton.focus();
+  playSentence(question);
+  nextButton.focus();
 }
 function showFinish() {
   if (!activeProfile.completedQuizIds.includes(currentQuiz.id)) activeProfile.completedQuizIds.push(currentQuiz.id);
@@ -288,10 +316,16 @@ function showFinish() {
 function advanceQuestion() {
   if (questionIndex === questions.length - 1) { showFinish(); return; }
   questionIndex += 1;
-  activeProfile.quizStates[currentQuiz.id].questionIndex = questionIndex;
+  const state = activeProfile.quizStates[currentQuiz.id];
+  state.questionIndex = Math.max(state.questionIndex || 0, questionIndex);
   saveProfiles();
   renderQuestion();
-  focusCurrentAnswer();
+  if (!hasAnswered) focusCurrentAnswer();
+}
+function previousQuestion() {
+  if (questionIndex === 0) return;
+  questionIndex -= 1;
+  renderQuestion();
 }
 
 profileEntry.addEventListener('submit', (event) => { event.preventDefault(); activateProfile(profileNameInput.value); });
@@ -316,6 +350,7 @@ hintButton.addEventListener('click', () => {
 checkButton.addEventListener('click', checkAnswer);
 $('#play-sentence').addEventListener('click', () => { if (hasAnswered) playSentence(questions[questionIndex]); });
 $('#play-sentence-slow').addEventListener('click', () => { if (hasAnswered) playSentence(questions[questionIndex], 0.7); });
+prevButton.addEventListener('click', previousQuestion);
 nextButton.addEventListener('click', () => { if (hasAnswered) advanceQuestion(); });
 skipRepeatButton.addEventListener('click', () => { if (!skipRepeatButton.hidden) advanceQuestion(); });
 answerInput.addEventListener('keydown', (event) => {
