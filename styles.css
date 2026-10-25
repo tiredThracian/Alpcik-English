@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Lexend:wght@400;500;600&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap');
 
 :root {
   color-scheme: light;
@@ -155,7 +155,7 @@ h1 { margin: 0; color: var(--ink); font-family: var(--display); font-weight: 600
 .hint-button span { margin-left: 4px; color: var(--mint-deep); font-size: 13px; }
 .hint-button:hover { background: #edf6ef; }
 .verb-hint { padding: 8px 12px; border-radius: 9px; background: #edf6ef; color: #728078; font-size: 14px; line-height: 1.35; }
-.sentence { min-height: 54px; margin: 24px 0 23px; color: #344550; font-family: var(--body, "DM Sans", "Trebuchet MS", sans-serif); font-size: clamp(25px, 4vw, 30px); font-weight: 600; letter-spacing: -.01em; line-height: 1.45; }
+.sentence { min-height: 54px; margin: 24px 0 23px; color: #344550; font-family: "Lexend", "DM Sans", "Trebuchet MS", sans-serif; font-size: clamp(23px, 3.7vw, 28px); font-weight: 500; letter-spacing: 0; line-height: 1.45; }
 .sentence strong { color: var(--mint-deep); font-weight: 700; }
 .blank { display: inline-block; min-width: 93px; border-bottom: 2px dashed #91bca8; color: var(--mint-deep); text-align: center; }
 .answer-label { display: block; margin-bottom: 8px; color: #738079; font-size: 12px; font-weight: 700; }
@@ -253,3 +253,5 @@ h1 { margin: 0; color: var(--ink); font-family: var(--display); font-weight: 600
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }
+.answer-row input, .choice-option { font-family: "Lexend", "DM Sans", "Trebuchet MS", sans-serif; }
+.answer-row input { font-size: 14px; }
