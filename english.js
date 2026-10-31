@@ -87,6 +87,31 @@ function collectSeenQuestions(profile) {
   }
   profile.seenQuestionKeys = [...seen];
 }
+function migrateQuizQuestionMix(profile) {
+  if (profile.quizQuestionMixVersion === 1) return;
+  const seen = new Set(Array.isArray(profile.seenQuestionKeys) ? profile.seenQuestionKeys : []);
+  const oldQuizIds = new Set(legacyQuizSets.map((quiz) => quiz.id));
+  for (const quiz of legacyQuizSets) {
+    if (profile.completedQuizIds.includes(quiz.id)) {
+      quiz.questions.forEach((question) => seen.add(questionSignature(question)));
+    }
+    const state = profile.quizStates[quiz.id];
+    if (!Array.isArray(state?.questionOrder)) continue;
+    state.questionOrder.slice(0, Math.max(0, state.questionIndex || 0)).forEach((id) => {
+      const question = legacyQuestionById.get(id);
+      if (question) seen.add(questionSignature(question));
+    });
+  }
+  profile.seenQuestionKeys = [...seen];
+  profile.completedQuizIds = profile.completedQuizIds.filter((id) => !oldQuizIds.has(id));
+  oldQuizIds.forEach((id) => { delete profile.quizStates[id]; });
+  for (const quiz of quizSets) {
+    if (quiz.questions.every((question) => seen.has(questionSignature(question)))) {
+      profile.completedQuizIds.push(quiz.id);
+    }
+  }
+  profile.quizQuestionMixVersion = 1;
+}
 function migrateLegacyProgress(profile) {
   try {
     if (localStorage.getItem(legacyMigrationKey) === 'done') return;
@@ -117,6 +142,7 @@ function activateProfile(name) {
   if (!Array.isArray(activeProfile.completedQuizIds)) activeProfile.completedQuizIds = [];
   if (!activeProfile.quizStates || typeof activeProfile.quizStates !== 'object' || Array.isArray(activeProfile.quizStates)) activeProfile.quizStates = {};
   migrateLegacyProgress(activeProfile);
+  migrateQuizQuestionMix(activeProfile);
   collectSeenQuestions(activeProfile);
   activeChildName.textContent = displayName;
   profileControls.hidden = false;
@@ -149,6 +175,12 @@ function shuffle(items) {
     [result[index], result[target]] = [result[target], result[index]];
   }
   return result;
+}
+function makeQuestionOrder(quiz, profile) {
+  const seen = new Set(profile.seenQuestionKeys || []);
+  const unseenIds = quiz.questions.filter((question) => !seen.has(questionSignature(question))).map((question) => question.id);
+  const seenIds = quiz.questions.filter((question) => seen.has(questionSignature(question))).map((question) => question.id);
+  return [...shuffle(unseenIds), ...shuffle(seenIds)];
 }
 function focusCurrentAnswer() {
   if (questions[questionIndex]?.mode === 'choice') choiceGrid.querySelector('.choice-option')?.focus({ preventScroll: true });
@@ -242,12 +274,12 @@ function enterQuiz(quiz) {
   currentQuiz = quiz;
   let state = activeProfile.quizStates[quiz.id];
   if (!state || !Array.isArray(state.questionOrder) || state.questionOrder.length !== quiz.questions.length) {
-    state = { questionOrder: shuffle(quiz.questions.map((question) => question.id)), questionIndex: 0 };
+    state = { questionOrder: makeQuestionOrder(quiz, activeProfile), questionIndex: 0 };
     activeProfile.quizStates[quiz.id] = state;
   }
   const ids = new Set(quiz.questions.map((question) => question.id));
   if (!state.questionOrder.every((id) => ids.has(id)) || new Set(state.questionOrder).size !== quiz.questions.length) {
-    state.questionOrder = shuffle(quiz.questions.map((question) => question.id));
+    state.questionOrder = makeQuestionOrder(quiz, activeProfile);
     state.questionIndex = 0;
   }
   if (!Number.isInteger(state.questionIndex) || state.questionIndex < 0 || state.questionIndex >= quiz.questions.length) state.questionIndex = 0;

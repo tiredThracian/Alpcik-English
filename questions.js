@@ -367,8 +367,8 @@ function makeOptions(question) {
   return stableShuffle([question.answer, ...distractors], `${question.id}-options`);
 }
 
-function makeQuizzes(questions, firstNumber) {
-  return Array.from({ length: 10 }, (_, quizIndex) => {
+function makeQuizzes(questions, firstNumber, quizCount = 10) {
+  return Array.from({ length: quizCount }, (_, quizIndex) => {
     const quizNumber = firstNumber + quizIndex;
     const quizQuestions = questions.slice(quizIndex * 20, (quizIndex + 1) * 20).map((question, index) => ({
       ...question,
@@ -379,4 +379,42 @@ function makeQuizzes(questions, firstNumber) {
   });
 }
 
-const quizSets = [...makeQuizzes(oldQuestions, 1), ...makeQuizzes(continuationQuestions, 11)];
+const legacyQuizSets = [...makeQuizzes(oldQuestions, 1), ...makeQuizzes(continuationQuestions, 11)];
+
+function makeShuffledQuizSets(questions, firstNumber) {
+  const quizCount = 20;
+  const questionsPerQuiz = 20;
+  const verbs = [...new Set(questions.map((question) => question.verb))].sort();
+  const pools = new Map(verbs.map((verb) => [
+    verb,
+    stableShuffle(questions.filter((question) => question.verb === verb), `mix-v1-${verb}`),
+  ]));
+  const omissions = new Map(verbs.map((verb) => [verb, questionsPerQuiz - pools.get(verb).length]));
+
+  return Array.from({ length: quizCount }, (_, quizIndex) => {
+    const quizNumber = firstNumber + quizIndex;
+    const tieOrder = stableShuffle(verbs, `mix-v1-quiz-${quizNumber}-omissions`);
+    const tieRank = new Map(tieOrder.map((verb, index) => [verb, index]));
+    const omittedVerbs = tieOrder
+      .filter((verb) => omissions.get(verb) > 0)
+      .sort((first, second) => omissions.get(second) - omissions.get(first) || tieRank.get(first) - tieRank.get(second))
+      .slice(0, verbs.length - questionsPerQuiz);
+    omittedVerbs.forEach((verb) => omissions.set(verb, omissions.get(verb) - 1));
+
+    const mixedQuestions = verbs
+      .filter((verb) => !omittedVerbs.includes(verb))
+      .map((verb) => pools.get(verb).shift());
+    return {
+      id: `quiz-${String(quizNumber).padStart(2, '0')}`,
+      number: quizNumber,
+      questions: stableShuffle(mixedQuestions, `mix-v1-quiz-${quizNumber}-order`).map((question, index) => ({
+        ...question,
+        mode: index % 2 === 0 ? 'typing' : 'choice',
+        options: makeOptions(question),
+      })),
+    };
+  });
+}
+
+const quizSets = makeShuffledQuizSets([...oldQuestions, ...continuationQuestions], 1);
+const legacyQuestionById = new Map(legacyQuizSets.flatMap((quiz) => quiz.questions.map((question) => [question.id, question])));
